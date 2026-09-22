@@ -1,9 +1,12 @@
 import os
+import logging
 from collections import defaultdict
 
 import requests
 
 WEATHER_API_KEY = os.getenv("API_KEY")
+
+logger = logging.getLogger(__name__)
 
 def get_weather_forecast(city_name: str, api_key:str) -> dict | None:
     """Fetches the 5-day weather forecast for a given city from open weather map"""
@@ -14,8 +17,8 @@ def get_weather_forecast(city_name: str, api_key:str) -> dict | None:
         response.raise_for_status()
         return response.json()
 
-    except requests.exceptions.HTTPError as err:
-        print(f"City {city_name} not found {err}")
+    except requests.exceptions.RequestException:
+        logger.exception(f"Failed to fetch forecast for {city_name}")
         return None
 
 def extract_daily_min_max(forecast_data: dict) -> dict:
@@ -39,7 +42,7 @@ def display_weather():
     cities = ["Saint-Geours-de-Maremne","Mérignac","Toulouse"]
 
     for city in cities:
-        print(f"{city.capitalize()}'s weather\n")
+        print(f"{city}'s weather\n")
         forcast_data = get_weather_forecast(city, WEATHER_API_KEY)
 
         if forcast_data:
@@ -49,9 +52,12 @@ def display_weather():
                 print(f"Date: {date} | Min: {temps['min']:.1f}°C | Max: {temps['max']:.1f}°C")
         else:
              print(f"Forecast currently unavailable for {city}")
+        print("")
 
 def main():
     """Main function"""
+    logging.basicConfig(level=logging.ERROR, format="%(asctime)s - %(levelname)s - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S")
     display_weather()
 
 if __name__ == '__main__':
