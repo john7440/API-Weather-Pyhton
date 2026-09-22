@@ -6,7 +6,7 @@ import requests
 WEATHER_API_KEY = os.getenv("API_KEY")
 
 def get_weather_forecast(city_name: str, api_key:str) -> dict | None:
-
+    """Fetches the 5-day weather forecast for a given city from open weather map"""
     api_url= f"https://api.openweathermap.org/data/2.5/forecast?q={city_name},fr&appid={api_key}&units=metric"
 
     try:
@@ -18,7 +18,8 @@ def get_weather_forecast(city_name: str, api_key:str) -> dict | None:
         print(f"City {city_name} not found {err}")
         return None
 
-def daily_min_max(forecast_data: dict) -> dict:
+def extract_daily_min_max(forecast_data: dict) -> dict:
+    """Extracts the daily minimum and maximum temperatures from the interval data"""
     daily_temps= defaultdict(list)
 
     for item in forecast_data.get("list", []):
@@ -34,6 +35,7 @@ def daily_min_max(forecast_data: dict) -> dict:
     return daily_summary
 
 def display_weather():
+    """Displays weather data"""
     cities = ["Saint-Geours-de-Maremne","Mérignac","Toulouse"]
 
     for city in cities:
@@ -41,7 +43,7 @@ def display_weather():
         forcast_data = get_weather_forecast(city, WEATHER_API_KEY)
 
         if forcast_data:
-            daily_summary = daily_min_max(forcast_data)
+            daily_summary = extract_daily_min_max(forcast_data)
 
             for date, temps in daily_summary.items():
                 print(f"Date: {date} | Min: {temps['min']:.1f}°C | Max: {temps['max']:.1f}°C")
@@ -49,6 +51,7 @@ def display_weather():
              print(f"Forecast currently unavailable for {city}")
 
 def main():
+    """Main function"""
     display_weather()
 
 if __name__ == '__main__':
