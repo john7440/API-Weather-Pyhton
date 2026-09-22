@@ -38,15 +38,15 @@ def extract_daily_min_max(forecast_data: dict) -> dict:
     return daily_summary
 
 def display_weather():
-    """Displays weather data"""
+    """Displays weather data for given cities"""
     cities = ["Saint-Geours-de-Maremne","Mérignac","Toulouse"]
 
     for city in cities:
         print(f"{city}'s weather\n")
-        forcast_data = get_weather_forecast(city, WEATHER_API_KEY)
+        forecast_data = get_weather_forecast(city, WEATHER_API_KEY)
 
-        if forcast_data:
-            daily_summary = extract_daily_min_max(forcast_data)
+        if forecast_data:
+            daily_summary = extract_daily_min_max(forecast_data)
 
             for date, temps in daily_summary.items():
                 print(f"Date: {date} | Min: {temps['min']:.1f}°C | Max: {temps['max']:.1f}°C")
@@ -58,6 +58,11 @@ def main():
     """Main function"""
     logging.basicConfig(level=logging.ERROR, format="%(asctime)s - %(levelname)s - %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S")
+
+    if not WEATHER_API_KEY:
+        logger.error("API_KEY environment variable not set")
+        return
+
     display_weather()
 
 if __name__ == '__main__':
