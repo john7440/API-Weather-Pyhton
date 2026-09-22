@@ -1,12 +1,20 @@
-# This is a sample Python script.
+import os
+import requests
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+WEATHER_API_KEY = os.getenv("API_KEY")
+API_URL = f"https://api.openweathermap.org/data/2.5/forecast?q={city_name},fr&appid={WEATHER_API_KEY}&units=metric"
 
+def get_weather_forecast(city_name: str) -> dict | None:
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+    try:
+        response = requests.get(API_URL, timeout=10)
+        response.raise_for_status()
+        return response.json()
+
+    except requests.exceptions.HTTPError as err:
+        print(f"City {city_name} not found {err}")
+        return None
+
 
 
 # Press the green button in the gutter to run the script.
