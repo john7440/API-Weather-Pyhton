@@ -4,12 +4,13 @@ from collections import defaultdict
 import requests
 
 WEATHER_API_KEY = os.getenv("API_KEY")
-API_URL = f"https://api.openweathermap.org/data/2.5/forecast?q={city_name},fr&appid={WEATHER_API_KEY}&units=metric"
 
-def get_weather_forecast(city_name: str) -> dict | None:
+def get_weather_forecast(city_name: str, api_key:str) -> dict | None:
+
+    api_url= f"https://api.openweathermap.org/data/2.5/forecast?q={city_name},fr&appid={api_key}&units=metric"
 
     try:
-        response = requests.get(API_URL, timeout=10)
+        response = requests.get(api_url, timeout=10)
         response.raise_for_status()
         return response.json()
 
@@ -32,8 +33,23 @@ def daily_min_max(forecast_data: dict) -> dict:
 
     return daily_summary
 
+def display_weather():
+    cities = ["Saint-Geours-de-Maremne","Mérignac","Toulouse"]
+
+    for city in cities:
+        print(f"{city.capitalize()}'s weather\n")
+        forcast_data = get_weather_forecast(city, WEATHER_API_KEY)
+
+        if forcast_data:
+            daily_summary = daily_min_max(forcast_data)
+
+            for date, temps in daily_summary.items():
+                print(f"Date: {date} | Min: {temps['min']:.1f}°C | Max: {temps['max']:.1f}°C")
+        else:
+             print(f"Forecast currently unavailable for {city}")
+
 def main():
-    get_weather_forecast()
+    display_weather()
 
 if __name__ == '__main__':
     main()
