@@ -1,4 +1,6 @@
 import os
+from collections import defaultdict
+
 import requests
 
 WEATHER_API_KEY = os.getenv("API_KEY")
@@ -15,10 +17,24 @@ def get_weather_forecast(city_name: str) -> dict | None:
         print(f"City {city_name} not found {err}")
         return None
 
+def daily_min_max(forecast_data: dict) -> dict:
+    daily_temps= defaultdict(list)
 
+    for item in forecast_data.get("list", []):
+        date_str = item["dt_txt"].split(" ")[0]
 
-# Press the green button in the gutter to run the script.
+        temp = item["main"]["temp"]
+        daily_temps[date_str].append(temp)
+
+    daily_summary = {}
+    for date, temps in daily_temps.items():
+        daily_summary[date] = {"min": min(temps), "max": max(temps)}
+
+    return daily_summary
+
+def main():
+    get_weather_forecast()
+
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    main()
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
