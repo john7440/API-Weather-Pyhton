@@ -35,7 +35,9 @@ def extract_daily_min_max(forecast_data: dict) -> dict:
     for date, temps in daily_temps.items():
         daily_summary[date] = {"min": min(temps), "max": max(temps)}
 
-    return daily_summary
+    five_days_summary = dict(list(daily_summary.items())[1::])
+
+    return five_days_summary
 
 def display_weather():
     """Displays weather data for given cities"""
