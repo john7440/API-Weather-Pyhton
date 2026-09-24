@@ -10,16 +10,18 @@ logger = logging.getLogger(__name__)
 
 def get_weather_forecast(city_name: str, api_key:str) -> dict | None:
     """Fetches the 5-day weather forecast for a given city from open weather map"""
-    api_url= f"https://api.openweathermap.org/data/2.5/forecast?q={city_name},fr&appid={api_key}&units=metric"
+    api_url= "https://api.openweathermap.org/data/2.5/forecast"
+    params = {"q": f"{city_name},fr", "appid": api_key, "units": "metric"}
 
     try:
-        response = requests.get(api_url, timeout=10)
+        response = requests.get(api_url,params=params, timeout=10)
         response.raise_for_status()
         return response.json()
 
     except requests.exceptions.RequestException:
         logger.exception(f"Failed to fetch forecast for {city_name}")
         return None
+
 
 def extract_daily_min_max(forecast_data: dict) -> dict:
     """Extracts the daily minimum and maximum temperatures from the interval data"""
